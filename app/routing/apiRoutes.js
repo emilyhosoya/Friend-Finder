@@ -30,9 +30,30 @@ module.exports = function(app) {
 
   app.post("/api/friends", function(req, res) {
     // This will be used to handle incoming survey results. This route will also be used to handle the compatibility logic.
-    let newUser = req.body;
+    newUser = req.body;
     console.log(newUser);
-    friendsData.push(newUser);
-    res.json(newUser);
+    // res.json(newUser);
+
+    const checkMatch = newUser => {
+      console.log("check match for: ", newUser);
+      friendsData.forEach(friend => {
+        let scoresToCompare = friend.scores;
+        let totalDifference = 0;
+
+        scoresToCompare.forEach(score => {
+          let difference = Math.abs(currentUser.scores[score] - score);
+          console.log(difference);
+          totalDifference += difference;
+        });
+
+        console.log(totalDifference);
+      });
+    };
+
+    checkMatch(newUser);
   });
 };
+
+// console.log(friendsData);
+
+// checkCompatability(friendsData[0]);

@@ -57,6 +57,26 @@
             </div>
         </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="matchModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Your Match:</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <footer class="mastfoot mt-auto text-center">
             <div class="inner">
                 <p>By
@@ -112,30 +132,42 @@
                 </div>`);
             });
 
-            $(document).ready(function () {
-                let newUser = {};
-                newUser.scores = [];
+            $(document).ready(function (checkMatch) {
+                // const currentURL = window.location.origin;
+                // let newUser = {};
 
                 $("#submit").on("click", function (event) {
                     event.preventDefault();
-                    console.log("submit was clicked");
-
-                    newUser.name = $(`input[name='name']`).val();
-                    newUser.photo = $(`input[name='photo']`).val();
+                    let scores = [];
 
                     for (let i = 0; i < 10; i++) {
                         let currentVal = $(`input:radio[name='survey-${i}']:checked`).val();
-                        newUser.scores.push(+currentVal);
+                        scores.push(+currentVal);
                     }
 
-                    console.log(newUser);
-
-                    $.post("/api/friends", newUser, function (error) {
-                        if (error) {
-                            console.log(error)
+                    $.ajax({
+                        url: "/api/friends",
+                        type: "POST",
+                        contentType: "application/json",
+                        dataType: "JSON",
+                        data: JSON.stringify({
+                            name: $(`input[name = 'name']`).val().trim(),
+                            photo: $(`input[name = 'photo']`).val().trim(),
+                            scores
+                        }),
+                        success: function (data, response) {
+                            console.log(data);
+                            console.log(response);
+                            checkMatch(data);
+                            $(".modal-body").text(`this is your match`);
+                            $('#matchModal').modal('show');
+                        },
+                        error: function (response) {
+                            console.log(response);
                         }
-                    });
+                    })
                 });
+
             })
         </script>
     </body>
